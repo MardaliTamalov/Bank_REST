@@ -12,7 +12,6 @@ import java.util.List;
 
 public interface TransactionsController {
 
-
     ResponseEntity<TransactionResponseDto> addTransfer(TransactionRequestDto transactionRequestDto);
 
     @Operation(
