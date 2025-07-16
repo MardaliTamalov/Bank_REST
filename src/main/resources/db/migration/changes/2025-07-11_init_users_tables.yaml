@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003
+      author: dev
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "admin@bank.com"
+              - column:
+                  name: password
+                  value: "$2a$10$xJw..." # Зашифрованный пароль (BCrypt)
+              - column:
+                  name: role_id
+                  value: "ADMIN"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "user@bank.com"
+              - column:
+                  name: password
+                  value: "$2a$10$yKw..." # Зашифрованный пароль (BCrypt)
+              - column:
+                  name: role_id
+                  value: "USER"

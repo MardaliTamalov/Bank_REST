@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+      file: db/migration/changes/2025-07-11_fill_tables.yaml
+  - include:
+      file: db/migration/changes/2025-07-11_init_cards_tables.yaml
+  - include:
+      file: db/migration/changes/2025-07-11_init_role_tables.yaml
+  - include:
+      file: db/migration/changes/2025-07-11_init_users_tables.yaml
+  - include:
+      file: db/migration/changes/005_creat_transactions_tables.yaml
