@@ -4,7 +4,6 @@ import com.example.bankcards.controller.TransactionsController;
 import com.example.bankcards.dto.TransactionRequestDto;
 import com.example.bankcards.dto.TransactionResponseDto;
 import com.example.bankcards.service.TransactionService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,7 @@ public class TransactionsControllerImpl implements TransactionsController {
         return ok(transactionService.createTransfer(transactionRequestDto));
     }
 
-   @GetMapping()
+   @GetMapping("/{id}")
     public ResponseEntity<List<TransactionResponseDto>> getCardTransactions(
             @PathVariable String cardNumber
           //  @AuthenticationPrincipal UserDetails userDetails

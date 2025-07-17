@@ -26,8 +26,8 @@ public class UsersControllerImpl implements UsersController {
     }
 
     @Override
-    @GetMapping()
-    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) throws InterruptedException {
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) {
         return ok(userService.getUserById(id));
     }
 

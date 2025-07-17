@@ -25,13 +25,13 @@ public class CardsControllerImpl implements CardsController {
     }
 
     @Override
-    @GetMapping()
+    @GetMapping("/{id}")
       public ResponseEntity<CardResponseDto> getCard(@PathVariable Long id) {
         return ok(cardService.getCardById(id));
     }
 
     @Override
-    @PutMapping("/{id}")
+    @PutMapping()
        public ResponseEntity<CardResponseDto> updateCard(@Valid @RequestBody CardRequestDto card) {
         return ok(cardService.updateCard(card));
     }

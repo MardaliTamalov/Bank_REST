@@ -4,9 +4,7 @@ import com.example.bankcards.dto.TransactionRequestDto;
 import com.example.bankcards.dto.TransactionResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
