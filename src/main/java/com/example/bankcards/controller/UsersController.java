@@ -18,8 +18,9 @@ public interface UsersController {
             @ApiResponse(responseCode = "200", description = "успешно получен пользователь"),
             @ApiResponse(responseCode = "404", description = "not found")
     })
-    @Parameter(name = "id", description = "id пользователя", example = "1")
-    ResponseEntity<UserResponseDto> getUser(Long id) throws InterruptedException;
+
+    ResponseEntity<UserResponseDto> getUser(@Parameter(description = "id пользователя", example = "1")
+                                              Long id);
 
     ResponseEntity<UserResponseDto> updateUser(Long id, UserRequestDto requestDto);
 

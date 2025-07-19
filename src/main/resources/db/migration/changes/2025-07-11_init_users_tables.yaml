@@ -3,6 +3,8 @@ databaseChangeLog:
       id: 003
       author: dev
       changes:
+        - sql:
+            sql: "SET CONSTRAINTS ALL DEFERRED;"
         - insert:
             tableName: users
             columns:
@@ -11,7 +13,7 @@ databaseChangeLog:
                   value: "admin@bank.com"
               - column:
                   name: password
-                  value: "$2a$10$xJw..." # Зашифрованный пароль (BCrypt)
+                  value: "$2a$10$xJw..."
               - column:
                   name: role_id
                   value: "ADMIN"
@@ -23,7 +25,9 @@ databaseChangeLog:
                   value: "user@bank.com"
               - column:
                   name: password
-                  value: "$2a$10$yKw..." # Зашифрованный пароль (BCrypt)
+                  value: "$2a$10$yKw..."
               - column:
                   name: role_id
                   value: "USER"
+        - sql:
+            sql: "SET CONSTRAINTS ALL IMMEDIATE;"

@@ -20,6 +20,9 @@ public record CardRequestDto(
 
         @NotNull(message = "Баланс не может быть null")
         @PositiveOrZero(message = "Баланс не может быть отрицательным")
-        BigDecimal balance
+        BigDecimal balance,
+
+         @NotNull(message = "ID владельца обязательно")
+                Long ownerId
 ) {
 }

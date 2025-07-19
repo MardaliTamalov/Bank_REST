@@ -14,8 +14,9 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     enabled: false
-    change-log: classpath:/db/changelog/changelog.yaml
+    change-log: classpath:/db/migration/changelog.yaml
     default-schema: public
+
   doc:
     swagger-ui:
       path: /swagger-ui.html
