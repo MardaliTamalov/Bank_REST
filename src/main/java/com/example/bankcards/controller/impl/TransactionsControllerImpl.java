@@ -24,14 +24,11 @@ public class TransactionsControllerImpl implements TransactionsController {
         return ok(transactionService.createTransfer(transactionRequestDto));
     }
 
-   @GetMapping("/{id}")
+   @GetMapping("/{cardNumber}")
     public ResponseEntity<List<TransactionResponseDto>> getCardTransactions(
             @PathVariable String cardNumber
           //  @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ok(transactionService.getTransactionsByCardId(cardNumber));
     }
-
-
-
 }
