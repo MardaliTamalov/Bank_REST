@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - include:
+      file: db/migration/changes/001_fill_tables.yaml
+  - include:
+      file: db/migration/changes/002_init_role_tables.yaml
+  - include:
+      file: db/migration/changes/003_init_users_tables.yaml
+  - include:
+      file: db/migration/changes/004_init_cards_tables.yaml
+  - include:
+      file: db/migration/changes/005_creat_transactions_tables.yaml
+  - include:
+      file: db/migration/changes/006_update_passwords.yaml
+  - include:
+      file: db/migration/changes/007_drop_unique_roleid.yaml

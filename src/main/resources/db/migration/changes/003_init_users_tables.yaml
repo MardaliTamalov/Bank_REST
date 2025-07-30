@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004
+      author: dev
+      changes:
+        - preConditions:
+            - onFail: MARK_RAN
+            - and:
+                - tableExists:
+                    tableName: users
+                - not:
+                    - sqlCheck:
+                        expectedResult: 1
+                        sql: "SELECT COUNT(*) FROM users WHERE username = 'admin@bank.com'"
+        - sql:
+            sql: "SET CONSTRAINTS ALL DEFERRED;"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "admin@bank.com"
+              - column:
+                  name: password
+                  value: "$2a$10$ZYodW5cguvkcEKz9Mw.rTuAieFlv/E6kKC0DfhQg.yIG1ZeY5urZ6" # Admin@12345
+              - column:
+                  name: role_id
+                  value: "ADMIN"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "user@bank.com"
+              - column:
+                  name: password
+                  value: "$2a$10$LbAzETl.xfCLwqZFboY0k.WymfGlVsUNZ1NEsCE/jNAWmypkoqLEW" # User@12345
+              - column:
+                  name: role_id
+                  value: "USER"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "newuser@example.com"
+              - column:
+                  name: password
+                  value: "$2a$10$yLVtvLwWJg40u0Sp0wnDw.pSArIWsSwz8nY981JsPrYixHZFf2Fu6" # NewUser@123
+              - column:
+                  name: role_id
+                  value: "USER"
+        - sql:
+            sql: "SET CONSTRAINTS ALL IMMEDIATE;"

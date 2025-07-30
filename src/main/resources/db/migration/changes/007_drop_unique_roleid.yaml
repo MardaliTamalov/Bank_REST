@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-unique-roleid-on-users
+      author: ai
+      changes:
+        - dropUniqueConstraint:
+            tableName: users
+            constraintName: ukkrvotbtiqhudlkamvlpaqus0t
