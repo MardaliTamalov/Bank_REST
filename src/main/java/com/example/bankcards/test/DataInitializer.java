@@ -61,18 +61,20 @@ public class DataInitializer {
         );
 
         usersToReset.forEach((username, newPassword) -> {
-            Optional<User> user = userRepository.findByUsername(username);
-            if (user != null) {
-                if (!passwordEncoder.matches(newPassword, user.get().getPassword())) {
-                    user.get().setPassword(passwordEncoder.encode(newPassword));
-                    userRepository.save(user.get());
-                    System.out.printf("Password reset for %s to: %s%n", username, newPassword);
-                } else {
-                    System.out.printf("Password for %s already matches the new value%n", username);
-                }
-            } else {
-                System.out.printf("User not found: %s%n", username);
-            }
+            Optional<User> userOpt = userRepository.findByUsername(username);
+
+            userOpt.ifPresentOrElse(
+                    user -> {
+                        if (!passwordEncoder.matches(newPassword, user.getPassword())) {
+                            user.setPassword(passwordEncoder.encode(newPassword));
+                            userRepository.save(user);
+                            System.out.printf("Password reset for %s to: %s%n", username, newPassword);
+                        } else {
+                            System.out.printf("Password for %s already matches the new value%n", username);
+                        }
+                    },
+                    () -> System.out.printf("User not found: %s%n", username)
+            );
         });
     }
 

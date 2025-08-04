@@ -29,7 +29,6 @@ import java.util.List;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final CardMapper cardMapper;
-    private final UserRepository userRepository;
 
     @Override
     public CardResponseDto createCard(CardRequestDto cardRequestDto) {

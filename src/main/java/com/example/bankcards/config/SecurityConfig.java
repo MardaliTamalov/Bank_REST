@@ -27,6 +27,17 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private String[] whiteList = {"/api/auth/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/swagger-resources",
+            "/webjars/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/actuator/**"};
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -48,28 +59,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/api/auth/**",
-                "/swagger-ui.html",
-                "/swagger-ui/**",
-                "/v3/api-docs/**",
-                "/swagger-resources/**",
-                "/swagger-resources",
-                "/webjars/**",
-                "/configuration/ui",
-                "/configuration/security",
-                "/actuator/**"
-            ).permitAll()
-            .requestMatchers("/api/users/**").hasRole("ADMIN")
-            .requestMatchers("/api/cards/**").hasAnyRole("ADMIN", "USER")
-            .requestMatchers("/api/transactions/**").hasAnyRole("ADMIN", "USER")
-            .anyRequest().authenticated()
-        )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(whiteList)
+                        .permitAll()
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/cards/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/api/transactions/**").hasAnyRole("ADMIN", "USER")
+                        .anyRequest().authenticated()
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
