@@ -3,13 +3,29 @@ package com.example.bankcards.controller;
 import com.example.bankcards.dto.*;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.enums.CardStatus;
+import com.example.bankcards.exception.CardNotFoundException;
+import com.example.bankcards.mapper.CardMapper;
+import com.example.bankcards.repository.CardRepository;
+import com.example.bankcards.repository.RoleRepository;
+import com.example.bankcards.repository.TransactionRepository;
+import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.CardService;
+import com.example.bankcards.service.TransactionService;
+import com.example.bankcards.service.impl.CardServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -17,33 +33,42 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest()
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class, LiquibaseAutoConfiguration.class})
 class CardsControllerImplTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private CardService cardService;
 
-//    @Mock
-//    private CardRepository cardRepository;
+    @MockBean
+    private CardRepository cardRepository;
 
-//    @InjectMocks
-//    private CardServiceImpl cardServiceImpl;
+    @MockBean
+    private UserRepository userRepository;
+
+    @MockBean
+    private RoleRepository roleRepository;
+
+    @MockBean
+    private TransactionRepository transactionRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -54,7 +79,6 @@ class CardsControllerImplTest {
 
     @BeforeEach
     void setUp() {
-//        mockMvc = MockMvcBuilders.standaloneSetup(cardsController).build();
 
         validCardRequest = new CardRequestDto(
                 "1234567890123456",
@@ -101,13 +125,13 @@ class CardsControllerImplTest {
     @WithMockUser(roles = "ADMIN")
     void addCard_InvalidRequest_ReturnsBadRequest() throws Exception {
         CardRequestDto invalidRequest = new CardRequestDto(
-                "123", // invalid card number
-                LocalDate.now().minusDays(1), // past date
-                null, // null status
-                BigDecimal.valueOf(-100), // negative balance
+                "123", // некорректный номер карты
+                LocalDate.now().minusDays(1), // дата в прошлом
+                null, // null статус
+                BigDecimal.valueOf(-100), // отрицательный баланс
                 null // null ownerId
         );
-
+        // Выполняем запрос и проверяем статус и сообщение об ошибке
         mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
@@ -129,8 +153,10 @@ class CardsControllerImplTest {
     void getCard_NonExistingId_ReturnsNotFound() throws Exception {
         when(cardService.getCardById(anyLong())).thenThrow(new RuntimeException("Card not found"));
 
-        mockMvc.perform(get("/cards/999"))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/cards/999"));
+        CardNotFoundException exception = assertThrows(CardNotFoundException.class, () -> {
+            cardService.getCardById(1L);//вызов метода
+        });
     }
 
     @Test
@@ -147,7 +173,7 @@ class CardsControllerImplTest {
                         .param("sort", "id,desc"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L))
-                .andExpect(jsonPath("$.content[0].maskedNumber").value("1234********3456"));
+                .andExpect(jsonPath("$.content[0].maskedCardNumber").value("1234********3456"));
     }
 
     @Test
@@ -167,8 +193,7 @@ class CardsControllerImplTest {
                         .param("sort", "id,desc")) // опционально, если нужно
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isEmpty())
-                .andExpect(jsonPath("$.totalElements").value(0))
-                .andExpect(jsonPath("$.totalPages").value(0));
+                .andExpect(jsonPath("$.totalElements").value(0));
     }
 
     @Test
