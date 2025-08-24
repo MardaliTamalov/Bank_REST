@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004
+      author: dev
+      changes:
+        - preConditions:
+            - onFail: MARK_RAN
+            - and:
+                - tableExists:
+                    tableName: cards
+                - sqlCheck:
+                    expectedResult: 1
+                    sql: "SELECT COUNT(*) FROM users WHERE id = 1"
+                - not:
+                    - sqlCheck:
+                        expectedResult: 1
+                        sql: "SELECT COUNT(*) FROM cards WHERE card_number = '1234567890123456'"
+        - insert:
+            tableName: cards
+            columns:
+              - column:
+                  name: card_number
+                  value: "1234567890123456"
+              - column:
+                  name: owner_id
+                  value: 1 # ID пользователя (admin)
+              - column:
+                  name: expiration_date
+                  value: "2025-12-31"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: balance
+                  value: 10000.00
+        - insert:
+            tableName: cards
+            columns:
+              - column:
+                  name: card_number
+                  value: "9876543210987654"
+              - column:
+                  name: owner_id
+                  value: 2 # ID пользователя (user)
+              - column:
+                  name: expiration_date
+                  value: "2024-10-31"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: balance
+                  value: 5000.00

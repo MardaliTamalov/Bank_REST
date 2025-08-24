@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002
+      author: dev
+      changes:
+        - preConditions:
+            - onFail: MARK_RAN
+            - and:
+                - tableExists:
+                    tableName: roles
+                - not:
+                    - sqlCheck:
+                        expectedResult: 1
+                        sql: "SELECT COUNT(*) FROM roles WHERE id = 'ADMIN'"
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: "ADMIN"
+              - column:
+                  name: description
+                  value: "Administrator role"
+        - preConditions:
+            - onFail: MARK_RAN
+            - and:
+                - tableExists:
+                    tableName: roles
+                - not:
+                    - sqlCheck:
+                        expectedResult: 1
+                        sql: "SELECT COUNT(*) FROM roles WHERE id = 'USER'"
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: "USER"
+              - column:
+                  name: description
+                  value: "Regular user role"
